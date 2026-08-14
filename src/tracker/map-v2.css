@@ -18,3 +18,19 @@
 @keyframes mapPulse{50%{transform:translate(-50%,-50%) scale(1.18);box-shadow:0 0 0 6px #fff5,0 0 25px #20efff}}
 @media(max-width:650px){.map-card{padding:7px;border-radius:18px}.map-card .section-heading{padding:10px}.map-stop{width:95px}.map-stop.current{width:125px}.map-stop .stop-label{padding:4px 7px;font-size:.56rem}.journey-dot{width:5px;height:5px}.journey-dot.current{width:13px;height:13px;border-width:3px}.year-scale{left:7px;right:7px;bottom:7px;padding:6px 8px}.year-scale span{display:none}}
 @media(prefers-reduced-motion:reduce){.journey-dot.current{animation:none}}
+.crystal-icon{display:inline-block;width:1.05em;height:1.05em;object-fit:contain;vertical-align:-.16em;filter:drop-shadow(0 0 5px #4ff)}
+.balance-crystal{width:58px;height:68px;object-fit:contain;filter:drop-shadow(0 0 12px #40eaff)}
+.balance strong{font-size:2rem}
+.homework .crystal-row{display:flex;justify-content:center;align-items:center;gap:8px;min-height:48px}
+.homework-crystal,.empty-crystal{width:35px;height:43px;object-fit:contain}
+.homework-crystal{filter:drop-shadow(0 0 7px #4be9ff)}
+.empty-crystal{display:inline-block;clip-path:polygon(50% 0,88% 27%,76% 78%,50% 100%,24% 78%,12% 27%);border:2px solid #817a9c;background:#2e294d;opacity:.65}
+.reward-picture{width:92px;height:92px;object-fit:contain;filter:drop-shadow(0 8px 10px #0008) drop-shadow(0 0 10px #b04cff55);transition:transform .25s ease}
+.reward-grid article:hover .reward-picture{transform:translateY(-4px) scale(1.05)}
+.reward-grid article>b{display:flex;align-items:center;justify-content:center;gap:5px}
+.next-stop b{white-space:nowrap}.next-stop .crystal-icon{width:18px;height:22px}
+.journey strong{display:flex;align-items:center;justify-content:center;gap:6px}.journey .crystal-icon{width:32px;height:38px}
+.sound-toggle{position:absolute;top:18px;right:0;display:flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #7663aa;border-radius:999px;background:#11143dcc;color:#bdb4d8;font:700 .72rem Nunito,sans-serif;cursor:pointer;z-index:3}
+.sound-toggle span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#292459;color:#8d83aa}
+.sound-toggle[aria-pressed="true"]{color:#92f5df;border-color:#53d9c3;box-shadow:0 0 15px #3bdec744}.sound-toggle[aria-pressed="true"] span{color:#07162b;background:#7af2dc}
+@media(max-width:650px){.balance-crystal{width:44px;height:52px}.homework-crystal,.empty-crystal{width:27px;height:34px}.reward-picture{width:76px;height:76px}.sound-toggle{position:relative;top:auto;right:auto;margin:0 auto 12px}}

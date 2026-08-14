@@ -25,11 +25,11 @@ export function renderMap(totalEarned, stops) {
     const point = pointOnRoute(index / (YEAR_MILESTONE_COUNT - 1));
     const state = index < currentMilestone ? 'passed' : index === currentMilestone ? 'current' : 'future';
     const required = Math.round(index * YEAR_CRYSTAL_CAPACITY / (YEAR_MILESTONE_COUNT - 1));
-    return `<span class="journey-dot ${state}" style="--x:${point.x}%;--y:${point.y}%" title="Этап ${index + 1}: ${required} 💎" aria-hidden="true"></span>`;
+    return `<span class="journey-dot ${state}" style="--x:${point.x}%;--y:${point.y}%" title="Этап ${index + 1}: ${required} кристаллов" aria-hidden="true"></span>`;
   }).join('');
   return `<div class="map" role="img" aria-label="Карта учебного года. Текущая локация: ${escapeHtml(current.label)}. Заработано ${totalEarned} из ${YEAR_CRYSTAL_CAPACITY} кристаллов.">
     <div class="map-shade"></div>${markers}
-    ${stops.map((stop) => { const state=stop.id===current.id?'current':stop.required<=totalEarned?'passed':'future'; return `<div class="map-stop ${state}" style="--x:${stop.x}%;--y:${stop.y}%"><span class="stop-icon">${stop.icon}</span><span class="stop-label">${escapeHtml(stop.label)}</span>${state==='current'?`<b>${totalEarned} 💎 · ТЫ ЗДЕСЬ</b>`:''}</div>`; }).join('')}
-    <div class="year-scale"><span>Начало пути</span><strong>${Math.min(totalEarned,YEAR_CRYSTAL_CAPACITY)} / ${YEAR_CRYSTAL_CAPACITY} 💎</strong><span>Вершина</span></div>
+    ${stops.map((stop) => { const state=stop.id===current.id?'current':stop.required<=totalEarned?'passed':'future'; return `<div class="map-stop ${state}" style="--x:${stop.x}%;--y:${stop.y}%"><span class="stop-label">${escapeHtml(stop.label)}</span>${state==='current'?`<b>${totalEarned} КРИСТАЛЛОВ · ТЫ ЗДЕСЬ</b>`:''}</div>`; }).join('')}
+    <div class="year-scale"><span>Начало пути</span><strong>${Math.min(totalEarned,YEAR_CRYSTAL_CAPACITY)} / ${YEAR_CRYSTAL_CAPACITY} кристаллов</strong><span>Вершина</span></div>
   </div>`;
 }
