@@ -23,15 +23,30 @@ function notify(text) {
 
 function handleError(error) {
   console.error(error);
-  notify(error.message || 'Не удалось выполнить действие');
+  notify(getErrorMessage(error));
+}
+
+function getErrorMessage(error) {
+  const code = error?.code || '';
+  if (code.includes('permission-denied')) return 'Нет прав на запись. Опубликуйте firestore.rules в Firebase.';
+  if (code.includes('unavailable') || code.includes('network')) return 'Нет связи с Firebase. Проверьте интернет и повторите.';
+  if (code.includes('unauthenticated')) return 'Сессия истекла. Войдите в админку ещё раз.';
+  return error?.message || 'Не удалось выполнить действие. Попробуйте ещё раз.';
+}
+
+function showFormError(form, error) {
+  const output = form.querySelector('.form-error');
+  if (output) output.textContent = getErrorMessage(error);
+  handleError(error);
 }
 
 async function withLock(button, action) {
   const label = button.textContent;
+  const slowTimer = setTimeout(() => { button.textContent = 'Ждём ответ Firebase…'; }, 8000);
   button.disabled = true;
   button.textContent = 'Сохраняем…';
   try { return await action(); }
-  finally { button.disabled = false; button.textContent = label; }
+  finally { clearTimeout(slowTimer); button.disabled = false; button.textContent = label; }
 }
 
 function openDialog(html, setup) {
@@ -102,16 +117,17 @@ function renderStudents() {
 }
 
 function showStudentForm() {
-  openDialog(`<h2>Новый ученик</h2><form><label>Имя<input name="displayName" required></label><label>Стартовый баланс<input name="balance" type="number" min="0" step="1" value="0" required></label><label>Всего заработано<input name="totalEarned" type="number" min="0" step="1" value="0" required></label><div class="dialog-actions"><button type="button" data-close>Отмена</button><button class="primary" type="submit">Создать</button></div></form>`, (dialog) => {
+  openDialog(`<h2>Новый ученик</h2><form><label>Имя<input name="displayName" required></label><label>Стартовый баланс<input name="balance" type="number" min="0" step="1" value="0" required></label><label>Всего заработано<input name="totalEarned" type="number" min="0" step="1" value="0" required></label><p class="form-error" role="alert"></p><div class="dialog-actions"><button type="button" data-close>Отмена</button><button class="primary" type="submit">Создать</button></div></form>`, (dialog) => {
     const form = dialog.querySelector('form');
     form.balance.oninput = () => { if (!form.totalEarned.dataset.manual) form.totalEarned.value = form.balance.value; };
     form.totalEarned.oninput = () => { form.totalEarned.dataset.manual = 'true'; };
     form.onsubmit = async (event) => {
       event.preventDefault();
+      form.querySelector('.form-error').textContent = '';
       try {
         await withLock(form.querySelector('[type=submit]'), () => createStudent({ displayName: form.displayName.value, balance: Number(form.balance.value), totalEarned: Number(form.totalEarned.value) }));
         dialog.close(); await refresh(); renderStudents(); notify('✓ Ученик создан');
-      } catch (error) { handleError(error); }
+      } catch (error) { showFormError(form, error); }
     };
   });
 }
