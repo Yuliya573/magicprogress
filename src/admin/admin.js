@@ -8,12 +8,17 @@ import { grantReward, listRewards, saveReward, setRewardActive } from './rewards
 import { listTransactions } from './transactions.js';
 import { calculateHomeworkDelta } from '../shared/calculations.js';
 import { escapeHtml, formatDate } from '../shared/formatters.js';
+import { openRules } from '../shared/rules.js';
 
 const app = document.querySelector('#admin-app');
 const toast = document.querySelector('#toast');
 let students = [];
 let rewards = [];
 const demoStudent = { id: 'demo', displayName: 'Маша', balance: 14, totalEarned: 29, active: true, publicToken: 'demo' };
+const demoRewards = [
+  { id: 'demo-game', title: 'Игра на уроке', cost: 10, active: true },
+  { id: 'demo-gift', title: 'Таинственный подарок', cost: 20, active: true }
+];
 
 function notify(text) {
   toast.textContent = text;
@@ -75,21 +80,23 @@ function renderLogin(note = '') {
 }
 
 function renderDemoAdmin() {
-  app.innerHTML = `<header class="topbar"><span class="logo">✦ Magic Progress <small>ДЕМО</small></span><nav><a class="nav-link" href="../?demo=1">Карта ученика</a><button id="close-demo">Закрыть демо</button></nav></header><div class="workspace"><div class="page-head"><div><p class="kicker">ДЕМОНСТРАЦИЯ</p><h1>Ученики</h1></div><button class="primary" data-demo>+ Добавить ученика</button></div><div class="toolbar"><label>Поиск <input value="Маша"></label><label><input type="checkbox"> Показать архивных</label></div><div class="cards"><article class="student-card"><div class="avatar">М</div><div><h2>${demoStudent.displayName}</h2><p>💎 Баланс: <b>${demoStudent.balance}</b> · 🗺 Пройдено: <b>${demoStudent.totalEarned}</b></p></div><div class="card-actions"><button id="demo-open">Открыть</button><a class="button-link" href="../?demo=1">Открыть карту</a></div></article></div><section class="panel demo-help"><h2>Это демонстрационные данные</h2><p>Можно осмотреть интерфейс без Firebase. Для настоящей работы вставьте Firebase config в файлы проекта.</p></section></div>`;
+  app.innerHTML = `<header class="topbar"><span class="logo">✦ Magic Progress <small>ДЕМО</small></span><nav><a class="nav-link" href="../?demo=1">Карта ученика</a><button id="demo-rules">Правила</button><button id="close-demo">Закрыть демо</button></nav></header><div class="workspace"><div class="page-head"><div><p class="kicker">ДЕМОНСТРАЦИЯ</p><h1>Ученики</h1></div><button class="primary" data-demo>+ Добавить ученика</button></div><div class="toolbar"><label>Поиск <input value="Маша"></label><label><input type="checkbox"> Показать архивных</label></div><div class="cards"><article class="student-card"><div class="avatar">М</div><div><h2>${demoStudent.displayName}</h2><p>💎 Баланс: <b>${demoStudent.balance}</b> · 🗺 Пройдено: <b>${demoStudent.totalEarned}</b></p></div><div class="card-actions"><button id="demo-open">Открыть</button><a class="button-link" href="../?demo=1">Открыть карту</a></div></article></div><section class="panel demo-help"><h2>Это демонстрационные данные</h2><p>Можно осмотреть интерфейс без Firebase. Для настоящей работы вставьте Firebase config в файлы проекта.</p></section></div>`;
   app.querySelector('#close-demo').onclick = () => renderLogin(!isAdminConfigured ? 'Добавьте конфигурацию Firebase, чтобы войти.' : '');
   app.querySelector('#demo-open').onclick = renderDemoStudent;
+  app.querySelector('#demo-rules').onclick = () => openRules(demoRewards, true);
   app.querySelectorAll('[data-demo]').forEach((button) => { button.onclick = () => notify('В демо-режиме данные не сохраняются'); });
 }
 
 function renderDemoStudent() {
-  app.innerHTML = `<header class="topbar"><span class="logo">✦ Magic Progress <small>ДЕМО</small></span><nav><button id="demo-back">Ученики</button><button id="close-demo">Закрыть демо</button></nav></header><div class="workspace"><button class="back" id="back">← Все ученики</button><div class="student-title"><div class="avatar big">М</div><div><h1>Маша</h1><p>Активный ученик</p></div></div><div class="stats"><article><span>Баланс</span><strong>14 💎</strong></article><article><span>Всего заработано</span><strong>29</strong></article></div><section class="panel link"><div><h2>Персональная ссылка</h2><p>Демонстрационная карта ученика</p></div><a class="button-link" href="../?demo=1">Открыть карту</a></section><div class="columns"><section class="panel"><div class="section-title"><h2>Домашние задания</h2><button class="primary" data-demo>+ Добавить ДЗ</button></div><div class="table"><div class="row"><span>Домашнее задание — 13.08.2026</span><b>3 / 5</b><span class="positive">+3 💎</span><button data-demo>Изменить</button></div></div></section><section class="panel"><h2>Выдать награду</h2><div class="reward-list"><button data-demo><span>🎲</span>Игра на уроке<b>10 💎</b></button><button disabled><span>🎁</span>Таинственный подарок<b>20 💎</b></button></div></section></div><section class="panel"><h2>История операций</h2><div class="table"><div class="row transaction"><span>13.08.2026</span><span>Домашнее задание</span><b class="positive">+3 💎</b></div></div></section></div>`;
-  app.querySelector('#back').onclick = renderDemoAdmin; app.querySelector('#demo-back').onclick = renderDemoAdmin; app.querySelector('#close-demo').onclick = () => renderLogin(!isAdminConfigured ? 'Добавьте конфигурацию Firebase, чтобы войти.' : '');
+  app.innerHTML = `<header class="topbar"><span class="logo">✦ Magic Progress <small>ДЕМО</small></span><nav><button id="demo-back">Ученики</button><button id="demo-rules">Правила</button><button id="close-demo">Закрыть демо</button></nav></header><div class="workspace"><button class="back" id="back">← Все ученики</button><div class="student-title"><div class="avatar big">М</div><div><h1>Маша</h1><p>Активный ученик</p></div></div><div class="stats"><article><span>Баланс</span><strong>14 💎</strong></article><article><span>Всего заработано</span><strong>29</strong></article></div><section class="panel link"><div><h2>Персональная ссылка</h2><p>Демонстрационная карта ученика</p></div><a class="button-link" href="../?demo=1">Открыть карту</a></section><div class="columns"><section class="panel"><div class="section-title"><h2>Домашние задания</h2><button class="primary" data-demo>+ Добавить ДЗ</button></div><div class="table"><div class="row"><span>Домашнее задание — 13.08.2026</span><b>3 / 5</b><span class="positive">+3 💎</span><button data-demo>Изменить</button></div></div></section><section class="panel"><h2>Выдать приз</h2><div class="reward-list"><button data-demo><span>🎲</span>Игра на уроке<b>10 💎</b></button><button disabled><span>🎁</span>Таинственный подарок<b>20 💎</b></button></div></section></div><section class="panel"><h2>История операций</h2><div class="table"><div class="row transaction"><span>13.08.2026</span><span>Домашнее задание</span><b class="positive">+3 💎</b></div></div></section></div>`;
+  app.querySelector('#back').onclick = renderDemoAdmin; app.querySelector('#demo-back').onclick = renderDemoAdmin; app.querySelector('#demo-rules').onclick = () => openRules(demoRewards, true); app.querySelector('#close-demo').onclick = () => renderLogin(!isAdminConfigured ? 'Добавьте конфигурацию Firebase, чтобы войти.' : '');
   app.querySelectorAll('[data-demo]').forEach((button) => { button.onclick = () => notify('В демо-режиме данные не сохраняются'); });
 }
 
 function renderShell(content, active = 'students') {
-  app.innerHTML = `<header class="topbar"><a class="logo" href="#">✦ Magic Progress</a><nav><button data-page="students" class="${active === 'students' ? 'active' : ''}">Ученики</button><button data-page="rewards" class="${active === 'rewards' ? 'active' : ''}">Награды</button><button id="logout">Выйти</button></nav></header><div class="workspace">${content}</div>`;
+  app.innerHTML = `<header class="topbar"><a class="logo" href="#">✦ Magic Progress</a><nav><button data-page="students" class="${active === 'students' ? 'active' : ''}">Ученики</button><button data-page="rewards" class="${active === 'rewards' ? 'active' : ''}">Призы</button><button id="admin-rules">Правила</button><button id="logout">Выйти</button></nav></header><div class="workspace">${content}</div>`;
   app.querySelector('#logout').onclick = logout;
+  app.querySelector('#admin-rules').onclick = () => openRules(rewards, true);
   app.querySelectorAll('[data-page]').forEach((button) => {
     button.onclick = () => button.dataset.page === 'students' ? renderStudents() : renderRewards();
   });
@@ -174,14 +181,14 @@ async function giveReward(student, reward, button) {
 }
 
 function renderRewards() {
-  renderShell(`<div class="page-head"><div><p class="kicker">КАТАЛОГ</p><h1>Награды</h1></div><button class="primary" id="add-reward">+ Добавить награду</button></div><div class="cards">${rewards.map((reward) => `<article class="student-card ${reward.active ? '' : 'archived'}"><div class="reward-emoji">${escapeHtml(reward.emoji || '🎁')}</div><div><h2>${escapeHtml(reward.title)}</h2><p>${reward.cost} 💎 · ${reward.active ? 'Активна' : 'В архиве'}</p></div><div class="card-actions"><button data-edit-reward="${reward.id}">Изменить</button><button data-toggle-reward="${reward.id}">${reward.active ? 'Архивировать' : 'Восстановить'}</button></div></article>`).join('') || '<div class="empty-panel">Наград пока нет</div>'}</div>`, 'rewards');
+  renderShell(`<div class="page-head"><div><p class="kicker">КАТАЛОГ ОБМЕНА</p><h1>Призы</h1><p class="page-description">Добавляйте призы, назначайте стоимость и управляйте их доступностью для учеников.</p></div><button class="primary" id="add-reward">+ Добавить приз</button></div><div class="cards prize-catalog">${rewards.map((reward) => `<article class="student-card ${reward.active ? '' : 'archived'}"><img class="admin-prize-picture" src="../assets/ui/reward-chest.png" alt=""><div><h2>${escapeHtml(reward.title)}</h2><p>${reward.cost} кристаллов · ${reward.active ? 'Доступен ученикам' : 'В архиве'}</p></div><div class="card-actions"><button data-edit-reward="${reward.id}">Изменить</button><button data-toggle-reward="${reward.id}">${reward.active ? 'Архивировать' : 'Восстановить'}</button></div></article>`).join('') || '<div class="empty-panel">Призов пока нет. Добавьте первый приз для обмена.</div>'}</div>`, 'rewards');
   app.querySelector('#add-reward').onclick = () => showRewardForm();
   app.querySelectorAll('[data-edit-reward]').forEach((button) => { button.onclick = () => showRewardForm(rewards.find((item) => item.id === button.dataset.editReward)); });
   app.querySelectorAll('[data-toggle-reward]').forEach((button) => { button.onclick = async () => { const reward = rewards.find((item) => item.id === button.dataset.toggleReward); try { await setRewardActive(reward.id, !reward.active); await refresh(); renderRewards(); notify('✓ Сохранено'); } catch (error) { handleError(error); } }; });
 }
 
 function showRewardForm(existing = {}) {
-  openDialog(`<h2>${existing.id ? 'Изменить' : 'Новая'} награда</h2><form><label>Название<input name="title" value="${escapeHtml(existing.title || '')}" required></label><label>Эмодзи<input name="emoji" value="${escapeHtml(existing.emoji || '🎁')}" required></label><label>Стоимость<input name="cost" type="number" min="1" step="1" value="${existing.cost || 10}" required></label><div class="dialog-actions"><button type="button" data-close>Отмена</button><button class="primary" type="submit">Сохранить</button></div></form>`, (dialog) => {
+  openDialog(`<h2>${existing.id ? 'Изменить приз' : 'Новый приз'}</h2><form><label>Название приза<input name="title" value="${escapeHtml(existing.title || '')}" placeholder="Например: выбрать игру на уроке" required></label><label>Обозначение<input name="emoji" value="${escapeHtml(existing.emoji || '🎁')}" maxlength="4" required></label><label>Стоимость в кристаллах<input name="cost" type="number" min="1" step="1" value="${existing.cost || 10}" required></label><div class="dialog-actions"><button type="button" data-close>Отмена</button><button class="primary" type="submit">Сохранить приз</button></div></form>`, (dialog) => {
     const form = dialog.querySelector('form');
     form.onsubmit = async (event) => { event.preventDefault(); try { await withLock(form.querySelector('[type=submit]'), () => saveReward({ ...existing, title: form.title.value, emoji: form.emoji.value, cost: Number(form.cost.value) })); dialog.close(); await refresh(); renderRewards(); notify('✓ Сохранено'); } catch (error) { handleError(error); } };
   });
